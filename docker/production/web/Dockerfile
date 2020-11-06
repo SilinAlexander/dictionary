@@ -25,13 +25,13 @@ RUN apk add build-base libzmq zeromq-dev
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY requirements.txt $HOME/requirements.txt
+COPY ./web/requirements.txt $HOME/requirements.txt
 
 
 
 RUN pip install -r $HOME/requirements.txt
 # copy entrypoint.sh
-COPY entrypoint.sh /entrypoint.sh
+COPY ./docker/production/web/entrypoint.sh /entrypoint.sh
 # copy project
 COPY . /usr/src/web/
 RUN chmod +x /entrypoint.sh
