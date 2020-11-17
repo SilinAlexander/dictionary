@@ -70,20 +70,12 @@ WSGI_APPLICATION = 'task.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': os.environ.get('ENGINE'),
         'NAME': os.environ.get('NAME'),
-        #'USER': 'postgres',
-        #'PASSWORD': 'example',
-        #'HOST': 'database',
-        #'PORT': 5432
-
-
-       #USER = os.environ.get('USER')
-       #ENGINE = os.environ.get('ENGINE')
-       #NAME = os.environ.get('NAME')
-       #PASSWORD = os.environ.get('PASSWORD')
-       #HOST = os.environ.get('HOST')
-       #PORT = os.environ.get('PORT')
+        'USER':  os.environ.get('USER'),
+        'PASSWORD': os.environ.get('PASSWORD'),
+        'HOST': os.environ.get('HOST'),
+        'PORT': os.environ.get('PORT'),
     }
 }
 
