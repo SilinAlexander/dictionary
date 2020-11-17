@@ -1,0 +1,10 @@
+web/static/
+.idea
+Pip*
+Pipfile*
+__pycache__/
+.idea/
+celerybeat*
+.local/
+*.log
+venv/
