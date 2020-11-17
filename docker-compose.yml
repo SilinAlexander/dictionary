@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  web:
+    env_file:
+      - ./docker/production/.env/.env
+    build:
+      context: .
+      dockerfile: ./docker/dev/web/Dockerfile
+    ports:
+      - 8015:8000
+    entrypoint: /entrypoint.sh
+    restart: always
+  database:
+    image: postgres:12.0-alpine
+    hostname: postgres
+    volumes:
+      - database:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+volumes:
+  database:
