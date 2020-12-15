@@ -33,5 +33,5 @@ RUN pip install -r $HOME/requirements.txt
 # copy entrypoint.sh
 COPY ./docker/production/web/entrypoint.sh /entrypoint.sh
 # copy project
-COPY . /usr/src/web/
+COPY ./web/ /usr/src/web/
 RUN chmod +x /entrypoint.sh
