@@ -56,7 +56,7 @@ services:
       depends_on:
         - nginx-proxy
 volumes:
-  postgres_data:
+  database:
   static_volume:
   media_volume:
   certs:
