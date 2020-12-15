@@ -7,4 +7,14 @@ __pycache__/
 celerybeat*
 .local/
 *.log
-venv/
+.ash_history
+.coverage
+.cache
+install_docker.sh
+
+web/media/icon/*
+!web/media/icon/default.jpg
+!web/media/theme/default.jpg
+web/media/sound
+web/locale/*
+venv

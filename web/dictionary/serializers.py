@@ -1,29 +1,43 @@
 from rest_framework import serializers
-from .models import Word
+from .models import Word, Category, Level, Theme
 
 
-class WordSerializer(serializers.Serializer):
-    title = serializers.CharField(max_length=120)
-    category = serializers.CharField()
-    level = serializers.CharField()
-    theme = serializers.CharField()
-    stw = serializers.CharField()
-    user_id = serializers.IntegerField()
-    example = serializers.CharField()
-    transcription = serializers.CharField()
+class CategorySerializer(serializers.ModelSerializer):
 
-    def create(self, validated_data):
-        return Word.objects.create(**validated_data)
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'icon')
 
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.category = validated_data.get('category', instance.category)
-        instance.level = validated_data.get('level', instance.level)
-        instance.theme = validated_data.get('theme', instance.theme)
-        instance.stw = validated_data.get('stw', instance.stw)
-        instance.theme = validated_data.get('example', instance.example)
-        instance.stw = validated_data.get('transcription', instance.transcription)
-        instance.user_id = validated_data.get('user_id', instance.user_id)
 
-        instance.save()
-        return instance
+class LevelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Level
+        fields = ('id', 'name', 'code')
+
+
+class ShortWordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Word
+        fields = ('id', 'name')
+
+
+class ThemeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Theme
+        fields = ('id', 'name', 'category', 'level', 'photo')
+
+
+class ThemeRetrieveSerializer(ThemeSerializer):
+    words = ShortWordSerializer(source='word_set', many=True)
+
+    class Meta(ThemeSerializer.Meta):
+        fields = ('id', 'name', 'category', 'level', 'photo', 'words')
+
+
+class WordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Word
+        fields = ('id', 'name', 'translation', 'transcription', 'example', 'sound')

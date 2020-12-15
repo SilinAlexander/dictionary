@@ -7,9 +7,13 @@ services:
       context: .
       dockerfile: ./docker/production/web/Dockerfile
     ports:
-      - 8000:8000
+      - 8001:8000
+    volumes:
+      - ./web/:/usr/src/web/
     entrypoint: /entrypoint.sh
     restart: always
+    depends_on:
+      - database
   database:
     image: postgres:12.0-alpine
     hostname: postgres

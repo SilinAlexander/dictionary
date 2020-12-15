@@ -1,10 +1,14 @@
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import get_object_or_404
 from django.views.generic import TemplateView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from .models import Word
-from .serializers import WordSerializer
+from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView
+from .models import Word, Category, Level, Theme
+from .serializers import CategorySerializer, LevelSerializer, ThemeSerializer, ThemeRetrieveSerializer, WordSerializer
+from rest_framework.views import View
+from .permissions import HasAPISecret
+from .filters import ThemeFilter
 # Create your views here.
 
 
@@ -12,29 +16,35 @@ class HomePageView(TemplateView):
     template_name = 'home.html'
 
 
-class WordView(APIView):
-    def get(self, request):
-        words = Word.objects.all()
-        serializer = WordSerializer(words, many=True)
-        return Response({"words": serializer.data})
+class CategoryAPIView(ListCreateAPIView):
+    serializer_class = CategorySerializer
 
-    def post(self, request):
-        word = request.data.get('word')
-        serializer = WordSerializer(data=word)
-        if serializer.is_valid(raise_exception=True):
-            word_saved = serializer.save()
-        return Response({"success": "Word ' { } ' created successfully".format(word_saved.title)})
+    def get_queryset(self):
+        return Category.objects.all()
 
-    def put(self, request, pk):
-        saved_word = get_object_or_404(Word.objects.all(), pk=pk)
-        data = request.data.get('word')
-        serializer = WordSerializer(instance=saved_word, data=data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            word_saved = serializer.save()
 
-        return Response({"success": "Word ' { } ' updated successfully".format(word_saved.title)})
+class LevelAPIView(ListCreateAPIView):
+    serializer_class = LevelSerializer
 
-    def delete(self, request, pk):
-        word = get_object_or_404(Word.objects.all(), pk=pk)
-        word.delete()
-        return Response({"message": "Word with id' { } ' has been deleted".format(pk)}, status=204)
+    def get_queryset(self):
+        return Level.objects.all()
+
+
+class ThemeAPIView(ListAPIView):
+    serializer_class = ThemeSerializer
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = ThemeFilter
+
+    def get_queryset(self):
+        return Theme.objects.all()
+
+
+class ThemeRetrieveAPIView(RetrieveAPIView, ThemeAPIView):
+    serializer_class = ThemeRetrieveSerializer
+
+
+class WordRetrieveAPIView(RetrieveAPIView):
+    serializer_class = WordSerializer
+
+    def get_queryset(self):
+        return Word.objects.all()

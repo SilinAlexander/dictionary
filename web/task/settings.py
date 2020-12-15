@@ -10,7 +10,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+API_SECRET = 'SECRET'
 
 # Application definition
 
@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'dictionary',
+    'django_filters',
+
 
 ]
 
@@ -107,3 +109,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+ #       'dictionary.permissions.HasAPISecret',
+    ),
+}

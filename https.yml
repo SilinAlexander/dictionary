@@ -1,0 +1,64 @@
+version: '3.7'
+services:
+  web:
+    env_file:
+      - ./docker/production/.env/.env
+    build:
+      context: .
+      dockerfile: ./docker/production/web/Dockerfile
+    expose:
+      - 8000
+    volumes:
+      - ./web/:/usr/src/web/
+      - static_volume:/usr/src/web/static
+      - media_volume:/usr/src/web/media
+    entrypoint: /entrypoint.sh
+    restart: always
+    depends_on:
+      - database
+  database:
+    image: postgres:12.0-alpine
+    hostname: postgres
+    volumes:
+      - database:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+  nginx-proxy:
+    container_name: nginx-proxy
+    build:
+      context: .
+      dockerfile: docker/production/nginx-proxy/Dockerfile
+    volumes:
+      - static_volume:/var/www/html/static
+      - media_volume:/var/www/html/media
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./logs/:/var/log/nginx/
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - web
+    restart: always
+  nginx-proxy-letsencrypt:
+      image: jrcs/letsencrypt-nginx-proxy-companion
+      env_file:
+        - ./docker/production/.env/.env.proxy-companion
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - certs:/etc/nginx/certs
+        - html:/usr/share/nginx/html
+        - vhost:/etc/nginx/vhost.d
+      depends_on:
+        - nginx-proxy
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:

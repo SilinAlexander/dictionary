@@ -1,59 +1,65 @@
 from django.db import models
 
-# Create your models here.
-skill_level = (
-    (0, 'pre-intermediate'),
-    (1, 'intermediate'),
-    (2, 'upper-intermediate')
-)
-DEFAULT = 'icon/default.jpg'
+DEFAULT_ICON = 'icon/default.jpg'
+DEFAULT_THEME = 'theme/default.jpg'
+DEFAULT_SOUND = ''
 
 
-def icon_upload_path(self, filename):
+def upload_icon_path(self, filename):
     """file will be uploaded to MEDIA_ROOT / icon  / category_id / <filename>"""
-    return f"profiles/{getattr(self, 'category_id')}/{filename}"
+    return f"icon/{filename}"
 
 
-class User(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-
-    def _str_(self):
-        return self.title
+def upload_theme_path(self, filename):
+    """file will be uploaded to MEDIA_ROOT / icon  / category_id / <filename>"""
+    return f"theme/{filename}"
 
 
-# class Word(models.Model):
-#     title = models.CharField(max_length=120)
-#     category = models.TextField()
-#     level = models.TextField()
-#     theme = models.TextField()
-#     stw = models.TextField()
-#     example = models.TextField()
-#     transcription = models.TextField()
-#     user = models.ForeignKey('User', related_name='words', on_delete=models.CASCADE)
-#
-#     def _str_(self):
-#         return self.title
-class Word(models.Model):
-    word = models.CharField(max_length=60)
+def upload_sound_path(self, filename):
+    """file will be uploaded to MEDIA_ROOT / icon  / category_id / <filename>"""
+    return f"sound/{filename}"
 
 
 class Category(models.Model):
     name = models.CharField(max_length=120)
-    icon = models.ImageField(upload_to=icon_upload_path, default=DEFAULT)
+    icon = models.ImageField(upload_to=upload_icon_path, default=DEFAULT_ICON)
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
 
 
 class Level(models.Model):
-    level = models.CharField(choices=skill_level, default=skill_level[0])
+    name = models.CharField(max_length=120)
+    code = models.CharField(max_length=120)
+
+    def __str__(self):
+        return f"{self.name}, code {self.code}"
 
 
 class Theme(models.Model):
     name = models.CharField(max_length=120)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='theme_set')
     level = models.ForeignKey(Level, on_delete=models.SET_NULL, null=True)
-    word = models.ManyToManyField(Word, related_name='word_set', )
+    photo = models.ImageField(upload_to=upload_theme_path, default=DEFAULT_THEME)
+
+    def __str__(self):
+        return self.name
 
 
+class Word(models.Model):
+    name = models.CharField(max_length=60)
+    translation = models.CharField(max_length=60)
+    transcription = models.CharField(max_length=60)
+    example = models.TextField()
+    sound = models.FileField(upload_to=upload_sound_path, default=DEFAULT_SOUND, null=True, blank=True)
+    theme = models.ForeignKey(Theme, related_name='word_set', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 
